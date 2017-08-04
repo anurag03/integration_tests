@@ -17,6 +17,8 @@ from utils.pretty import Pretty
 from utils.update import Updateable
 from utils.appliance import Navigatable
 from utils.appliance.implementations.ui import navigator, CFMENavigateStep, navigate_to
+from utils.appliance import get_or_create_current_appliance
+from widgetastic_patternfly import BootstrapSwitch, View
 
 
 details_page = Region(infoblock_type='detail')
@@ -298,7 +300,6 @@ class Visual(Updateable, Navigatable):
         fill(self.display_form.time_zone, str(value))
         sel.click(form_buttons.save)
 
-
 visual = Visual()
 
 
@@ -341,6 +342,10 @@ class DefaultFilterAll(CFMENavigateStep):
 
     def step(self):
         tabs.select_tab("Default Filters")
+
+
+class DefaultBootstrapSwitch(View):
+    bs = BootstrapSwitch("display_vms")
 
 
 class DefaultView(Updateable, Navigatable):
@@ -396,6 +401,24 @@ class DefaultView(Updateable, Navigatable):
         bg = ButtonGroup(button_group_name, fieldset=fieldset)
         navigate_to(cls, 'All')
         return bg.active
+
+    @classmethod
+    def set_default_view_switch_on(cls):
+        navigate_to(cls, 'All')
+        appliance = get_or_create_current_appliance()
+        views = appliance.browser.widgetastic.create_view(DefaultBootstrapSwitch)
+        if views.bs.fill(True):
+            sel.click(form_buttons.save)
+        return True
+
+    @classmethod
+    def set_default_view_switch_off(cls):
+        navigate_to(cls, 'All')
+        appliance = get_or_create_current_appliance()
+        views = appliance.browser.widgetastic.create_view(DefaultBootstrapSwitch)
+        if views.bs.fill(False):
+            sel.click(form_buttons.save)
+        return True
 
 
 @navigator.register(DefaultView, 'All')

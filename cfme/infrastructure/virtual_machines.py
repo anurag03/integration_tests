@@ -32,12 +32,12 @@ from utils.log import logger
 from utils.pretty import Pretty
 from utils.wait import wait_for
 from utils import version, deferred_verpick
-from widgetastic.widget import Text, View
 from widgetastic_patternfly import (
-    Button, BootstrapSelect, BootstrapSwitch, Dropdown, Input as WInput
+    Button, BootstrapSelect, BootstrapSwitch, Dropdown, Input as WInput, Accordion, Text
 )
-from widgetastic_manageiq import TimelinesView
+from widgetastic_manageiq import TimelinesView, ManageIQTree
 from widgetastic_manageiq.vm_reconfigure import DisksTable
+from widgetastic.widget import View
 
 # for provider specific vm/template page
 QUADICON_TITLE_LOCATOR = ("//div[@id='quadicon']/../../../tr/td/a[contains(@href,'vm_infra/x_show')"
@@ -798,6 +798,25 @@ class Genealogy(object):
         return processed_path
 
 
+class ExploreVmView(BaseLoggedInPage):
+        title = Text('#explorer_title_text')
+
+        @View.nested
+        class accordions(View):  # noqa
+
+            @View.nested
+            class vmandtemplates(Accordion):  # noqa
+                ACCORDION_NAME = 'VMs & Templates'
+                tree = ManageIQTree()
+
+        @property
+        def is_displayed(self):
+            # TODO: We will need a better ID of this location when we
+            # have user permissions in effect
+            return (
+                self.accordions.datacenter.is_displayed and
+                self.accordions.Vsphere.is_displayed)
+
 ###
 # Multi-object functions
 #
@@ -967,6 +986,7 @@ def get_number_of_vms(do_not_navigate=False):
 @navigator.register(Vm, 'All')
 class VmAllWithTemplates(CFMENavigateStep):
     prerequisite = NavigateToAttribute('appliance.server', 'LoggedIn')
+    VIEW = ExploreVmView
 
     def step(self, *args, **kwargs):
         self.prerequisite_view.navigation.select('Compute', 'Infrastructure', '/vm_infra/explorer')
