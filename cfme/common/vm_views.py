@@ -3,6 +3,7 @@ from lxml.html import document_fromstring
 import os
 from time import sleep
 
+from widgetastic.exceptions import NoSuchElementException
 from widgetastic.widget import View, Text, TextInput, Checkbox, ParametrizedView
 from widgetastic_patternfly import (
     Dropdown, BootstrapSelect, Tab, FlashMessages, Input, CheckableBootstrapTreeview)
@@ -33,6 +34,8 @@ class InstanceQuadIconEntity(BaseQuadIconEntity):
 
             state = os.path.split(state)[1]
             state = os.path.splitext(state)[0]
+        except NoSuchElementException:
+            return {}
         except IndexError:
             state = ''
 
