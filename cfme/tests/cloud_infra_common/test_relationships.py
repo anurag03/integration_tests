@@ -14,7 +14,7 @@ from cfme.infrastructure.cluster import ClusterDetailsView, ProviderAllClustersV
 from cfme.infrastructure.datastore import HostAllDatastoresView, ProviderAllDatastoresView
 from cfme.infrastructure.provider.virtualcenter import VMwareProvider
 from cfme.infrastructure.virtual_machines import (HostTemplatesOnlyAllView,
-    ProviderTemplatesOnlyAllView)
+                                                  ProviderTemplatesOnlyAllView)
 from cfme.networks.views import NetworkProviderDetailsView, ProviderSecurityGroupAllView
 from cfme.storage.manager import ProviderStorageManagerAllView
 from cfme.utils.appliance.implementations.ui import navigate_to
